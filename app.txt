@@ -1,0 +1,39 @@
+import streamlit as st
+import json
+import xmltodict
+from deepdiff import DeepDiff
+
+def load_file(uploaded_file, file_type):
+    content = uploaded_file.read()
+    if file_type == "JSON":
+        return json.loads(content)
+    elif file_type == "XML":
+        return xmltodict.parse(content)
+    else:
+        st.error("Unsupported file format")
+        return None
+
+def compare_data(data1, data2):
+    return DeepDiff(data1, data2, ignore_order=True)
+
+st.title("🧮 File Comparison Tool (JSON / XML)")
+
+file_type = st.selectbox("Select file format", ["JSON", "XML"])
+
+file1 = st.file_uploader("Upload File 1", type=["json", "xml"])
+file2 = st.file_uploader("Upload File 2", type=["json", "xml"])
+
+if file1 and file2:
+    try:
+        data1 = load_file(file1, file_type)
+        data2 = load_file(file2, file_type)
+
+        st.subheader("🔍 Comparison Result")
+        result = compare_data(data1, data2)
+        if result:
+            st.error("Differences found:")
+            st.json(result)
+        else:
+            st.success("✅ Files are identical!")
+    except Exception as e:
+        st.exception(f"Error: {e}")
