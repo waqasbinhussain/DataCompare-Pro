@@ -5,8 +5,24 @@ from deepdiff import DeepDiff
 import pandas as pd
 from collections.abc import Mapping
 
-# ---------- Utility Functions ----------
+# ------------------- Page Setup -------------------
+st.set_page_config(
+    page_title="Multi-Format File Comparison Tool",
+    layout="wide",
+    initial_sidebar_state="auto"
+)
 
+# ------------------- App Title -------------------
+st.markdown("""
+    <div style='text-align: center; padding: 10px 0;'>
+        <!-- Optional: Replace with your logo -->
+        <!-- <img src='https://raw.githubusercontent.com/your-username/json-xml-diff-tool/main/assets/waqas-logo.png' width='180'> -->
+    </div>
+""", unsafe_allow_html=True)
+
+st.title("🦮 Multi-Format File Comparison Tool (JSON / XML)")
+
+# ------------------- Utility Functions -------------------
 def load_file(uploaded_file, file_type):
     content = uploaded_file.read()
     if file_type == "JSON":
@@ -48,11 +64,7 @@ def flatten_json(y, prefix='root'):
     flatten(y, prefix)
     return out
 
-# ---------- Streamlit UI ----------
-
-st.set_page_config(layout="wide")
-st.title("🧮 Multi-Format File Comparison Tool (JSON / XML)")
-
+# ------------------- Streamlit UI -------------------
 file_type = st.selectbox("Select file format", ["JSON", "XML"])
 
 file1 = st.file_uploader("Upload File 1", type=["json", "xml"])
@@ -61,7 +73,7 @@ file2 = st.file_uploader("Upload File 2", type=["json", "xml"])
 if file1 and file2:
     try:
         col1, col2 = st.columns(2)
-        
+
         data1, raw1 = load_file(file1, file_type)
         data2, raw2 = load_file(file2, file_type)
 
@@ -80,9 +92,9 @@ if file1 and file2:
         if result:
             st.error("🚨 Differences found!")
 
-            # 🔁 Values Changed Section
+            # 🖁 Values Changed Section
             if 'values_changed' in result:
-                st.subheader("🔁 Values Changed")
+                st.subheader("🖁 Values Changed")
 
                 name1 = file1.name
                 name2 = file2.name
@@ -156,14 +168,14 @@ if file1 and file2:
 
     except Exception as e:
         st.exception(f"❌ Error occurred: {e}")
-        # ---------- Footer ----------
+
+# ------------------- Footer -------------------
 st.markdown(
     """
     <hr style="margin-top: 40px; margin-bottom: 10px; border: none; border-top: 1px solid #eee;">
     <div style="text-align: center;">
         Developed by <strong>WaqasBinhussain</strong> | 
-        <a href="https://www.linkedin.com/in/waqasbinhussain/
-" target="_blank" style="text-decoration: none;">
+        <a href="https://www.linkedin.com/in/waqasbinhussain/" target="_blank" style="text-decoration: none;">
             <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" width="20" style="vertical-align: middle; margin-bottom: 3px;">
             LinkedIn
         </a>
@@ -171,4 +183,3 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
