@@ -6,6 +6,3 @@ secondaryBackgroundColor = "#1a1c23"
 textColor = "#f1f1f1"
 font = "sans serif"
 
-[client]
-toolbarMode = "default"
-showSidebarNavigation = false
