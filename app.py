@@ -4,6 +4,7 @@ import xmltodict
 from deepdiff import DeepDiff
 import pandas as pd
 from collections.abc import Mapping
+import io
 
 # ------------------- Page Setup -------------------
 st.set_page_config(
@@ -20,7 +21,7 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-st.title("🦮 Multi-Format File Comparison Tool (JSON / XML)")
+st.title("🧮 Multi-Format File Comparison Tool (JSON / XML)")
 
 # ------------------- Utility Functions -------------------
 def load_file(uploaded_file, file_type):
@@ -92,9 +93,9 @@ if file1 and file2:
         if result:
             st.error("🚨 Differences found!")
 
-            # 🖁 Values Changed Section
+            # 🔁 Values Changed Section
             if 'values_changed' in result:
-                st.subheader("🖁 Values Changed")
+                st.subheader("🔁 Values Changed")
 
                 name1 = file1.name
                 name2 = file2.name
@@ -112,6 +113,15 @@ if file1 and file2:
 
                 df = pd.DataFrame(table_rows)
                 st.dataframe(df, use_container_width=True)
+
+                # Export CSV and Excel
+                csv = df.to_csv(index=False).encode('utf-8')
+                st.download_button("📥 Download Differences as CSV", csv, "differences.csv", "text/csv")
+
+                excel_buffer = io.BytesIO()
+                with pd.ExcelWriter(excel_buffer, engine='xlsxwriter') as writer:
+                    df.to_excel(writer, index=False, sheet_name='Differences')
+                st.download_button("📥 Download Differences as Excel", excel_buffer.getvalue(), "differences.xlsx")
 
             # 🟢 Added Items
             if 'dictionary_item_added' in result:
@@ -165,6 +175,15 @@ if file1 and file2:
 
         df_full = pd.DataFrame(table_rows)
         st.dataframe(df_full, use_container_width=True)
+
+        # Export Full Comparison Table
+        full_csv = df_full.to_csv(index=False).encode('utf-8')
+        st.download_button("📥 Download Full Comparison as CSV", full_csv, "full_comparison.csv", "text/csv")
+
+        full_excel = io.BytesIO()
+        with pd.ExcelWriter(full_excel, engine='xlsxwriter') as writer:
+            df_full.to_excel(writer, index=False, sheet_name='Full Comparison')
+        st.download_button("📥 Download Full Comparison as Excel", full_excel.getvalue(), "full_comparison.xlsx")
 
     except Exception as e:
         st.exception(f"❌ Error occurred: {e}")
