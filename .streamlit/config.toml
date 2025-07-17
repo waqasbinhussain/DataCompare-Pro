@@ -11,5 +11,6 @@ enableCORS = false
 
 [client]
 showSidebarNavigation = false
-toolbarMode = "default"
+toolbarMode = "minimal"
+
 
